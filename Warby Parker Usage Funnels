@@ -1,0 +1,43 @@
+/* Looking at table */
+
+SELECT * FROM survey
+ LIMIT 10;
+
+/* Looking at quiz funnel and seeing how many users moved from question 1 to question 2, etc. */
+
+SELECT question, COUNT(DISTINCT user_id)
+ FROM survey
+ GROUP BY question
+ ORDER BY question;
+
+/* Calculated the percentage of users that completed each question in Excel */
+
+question	COUNT(DISTINCT user_id)	Percentage
+1. What are you looking for?	500	500
+2. What's your fit?	475	0.95
+3. Which shapes do you like?	380	0.8
+4. Which colors do you like?	361	0.95
+5. When was your last eye exam?	270	0.747922438
+
+/* Looking at table from 3 tables */
+SELECT * FROM quiz
+ LIMIT 5;
+ 
+ SELECT * FROM home_try_on
+ LIMIT 5;
+ 
+ SELECT * FROM purchase
+ LIMIT 5;
+ 
+ /* Used a LEFT JOIN to combine the three tables, starting with the top of the funnel (quiz) and ending with the bottom of the funnel (purchase) */
+
+SELECT q.user_id, 
+h.user_id IS NOT NULL AS 'is_home_try_on', 
+h.number_of_pairs, 
+p.user_id IS NOT NULL AS 'is_purchase' 
+FROM quiz q
+LEFT JOIN home_try_on h
+ON q.user_id = h.user_id
+LEFT JOIN purchase p
+ON h.user_id = p.user_id
+LIMIT 10;
